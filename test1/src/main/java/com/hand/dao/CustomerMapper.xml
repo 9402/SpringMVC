@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+	namespace：必须与对应的接口全类名一致
+	id:必须与对应接口的某个对应的方法名一致
+ -->
+<mapper namespace="com.hand.dao.CustomerMapper">
+	<select id="SelectCustomer" resultType="Customer">
+		select * from customer c where c.first_name=#{first_name} and c.last_name=#{last_name}
+	</select>
+	<select id="SelectCustomerByID" parameterType="Short" resultType="Customer">
+		select * from customer c where c.customer_id=#{customer_id}
+	</select>
+	<select id="SelectAllnumber" resultType="java.lang.Integer">
+		select count(*) from customer
+	</select>
+	
+	<!--resultMap为了映射返回类型为集合相关的
+		其中id对应当前表的主键，column表示表中对应的列名  property表示实体类中对应的属性名称-->
+	<!-- 多表关联进行的配置 -->
+	<resultMap type="Customer" id="resultListCustomer">
+        <id column="customer_id" property="customer_id" />
+        <result column="store_id" property="store_id" />
+        <result column="first_name" property="first_name" />
+        <result column="last_name" property="last_name" />
+        <result column="email" property="email" />
+        <result column="active" property="active" />
+        <result column="create_date" property="create_date" />
+        <result column="last_update" property="last_update" />
+        <!--在表中有外键时，使用association，它表示外键所对应表  -->
+        <association property="address_id" column="address_id" javaType="Address">
+	        <id property="address_id" column="address_id" />
+	        <result property="address" column="address" />
+	        <result property="address2" column="address2" />	        
+	        <result property="district" column="district" />	        
+	        <result property="city_id" column="city_id" />	        
+	        <result property="postal_code" column="postal_code" />	        
+	        <result property="phone" column="phone" />	        
+	        <result property="last_update" column="last_update" />	        
+	    </association>
+    </resultMap>
+    <!-- id为接口中的方法名，要保持一致。在MySQLsql中使用分页时，需要加上limit，
+    	 其中#{}代表占位符，里面的参数需要与接口中传入的参数或者实体类中对应属性名保持一致 -->
+	<select id="selectCustomerPage"  resultMap="resultListCustomer">
+		select c.*,a.* from customer c,address a
+		where a.address_id=c.address_id
+		order by c.customer_id DESC limit #{num},#{size}
+	</select>
+	<!-- useGeneratedKeys="true" keyProperty="id"实用于insert语句中，适用于主键可以自动增长的数据库
+		此处这两个属性替代了下面添加属性时要考虑的id值的情况
+	 -->
+	<insert id="addCustomer" parameterType="Customer" useGeneratedKeys="true" keyProperty="id"> 
+        insert into customer(first_name,last_name,email,address_id,store_id)  
+             values(#{first_name},#{last_name},#{email},#{address_id.address_id},#{store_id})  
+    </insert>
+	
+	<delete id="delete" parameterType="Short">
+		delete from customer where customer_id=#{customer_id}
+	</delete>
+	<!-- 由于在customer类中，对应的外键设置address_id返回为实体类，
+		因此这里的address_id.address_id代表获得address中的具体address_id值 -->
+	<update id="updateCustomer" parameterType="Customer">
+		update customer set first_name=#{first_name},last_name=#{last_name},email=#{email},
+		address_id=#{address_id.address_id} where customer_id=#{customer_id}
+	</update>
+</mapper>
+
