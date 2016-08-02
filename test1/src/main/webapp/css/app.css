@@ -1,0 +1,39 @@
+h1,h3,p,a,button{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.onepage{
+    height: 750px;
+}
+
+.onepage-bg{
+    height: 650px;
+    width: 100%;
+    position: absolute;
+    background-position: center,center;
+    background-size: cover;
+    background-image: url("../imge/4.jpg");
+}
+
+#onepagebg{
+
+ }
+
+.headhcontent{
+    margin-top: 150px;
+    line-height: 45px;
+}
+
+.title-text{
+    margin-left: 50px;
+}
+
+.headfonsize h1{
+    font-size: 50px;
+    color: white;
+}
+
+.headfonsize p{
+    margin-top: 10px;
+    line-height: 15px;
+    color: white;
+}
